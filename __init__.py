@@ -1,11 +1,33 @@
 import bpy
 import os
 import subprocess
+import sys
 import tempfile
 import shutil
 from bpy.types import Operator
 from bpy.props import StringProperty, EnumProperty, IntProperty
 import imageio_ffmpeg
+
+
+def _ffmpeg_executable():
+    """Return ffmpeg, including binaries outside a macOS GUI app's PATH."""
+    try:
+        return imageio_ffmpeg.get_ffmpeg_exe()
+    except RuntimeError:
+        # Blender started from Finder or the Dock does not inherit the shell
+        # PATH, so imageio-ffmpeg cannot see Homebrew or MacPorts binaries.
+        if sys.platform == "darwin":
+            found = shutil.which(
+                "ffmpeg",
+                path=os.pathsep.join((
+                    "/opt/homebrew/bin",
+                    "/usr/local/bin",
+                    "/opt/local/bin",
+                )),
+            )
+            if found:
+                return found
+        raise
 
 
 class RENDER_OT_animation_gif(Operator):
@@ -97,7 +119,7 @@ class RENDER_OT_animation_gif(Operator):
             os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
             # Build FFmpeg command
-            ffmpeg_exe = imageio_ffmpeg.get_ffmpeg_exe()
+            ffmpeg_exe = _ffmpeg_executable()
             cmd = [ffmpeg_exe, "-y", "-i", temp_video_path]
 
             if self.quality == 'HIGH':
