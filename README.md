@@ -1,7 +1,8 @@
 # render-animated-gif
 A Blender addon that allows you to render animated .gifs directly within Blender itself.
 
-Available soon in the Blender Extensions Platform!
+[Available in the Blender Extensions Platform!](https://extensions.blender.org/add-ons/render-gif-animation/)
+\
 \
 It is HIGHLY recommended to only be used with the Video Sequencer Editor, as rendering 3d Scenes directly into .gif is very slow and freezes Blender for the entire duration.
 \
